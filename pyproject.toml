@@ -1,0 +1,15 @@
+[project]
+name = "convertor"
+version = "0.1.0"
+description = "Standalone proxy subscription converter"
+requires-python = ">=3.13"
+dependencies = [
+    "dotenv>=0.9.9",
+    "pydantic",
+    "requests",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+subconv = "cli:main"
+subscription-converter = "subscription_converter:main"
