@@ -5,7 +5,7 @@
 测试不支持的规则类型是否被正确过滤
 """
 
-from ini_parser import INIConfigParser
+from py_subconverter.ini_parser import INIConfigParser
 
 
 def test_unsupported_rule_filtering():
