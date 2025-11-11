@@ -2,9 +2,8 @@ import os
 
 from dotenv import load_dotenv
 
-from dler_api_client import DlerAPIClient
-from sub_converter import download_config
-from subscription_converter import SubscriptionConverter
+from py_subconverter import DlerAPIClient, SubscriptionConverter
+from py_subconverter.sub_converter import download_config
 
 
 def main():

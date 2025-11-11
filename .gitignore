@@ -41,16 +41,21 @@ ENV/
 
 # Project specific
 config.yaml
+config_*.yaml
 uv.lock
 
+# Generated config files
+*.yaml
+!pyproject.toml
+
 # Test and debug files
-*test*.yaml
-test_*.py
-*debug*.py
-*compare*.py
-config_*.yaml
-cli_test_*.yaml
-test_results.txt
+test_results*.txt
+
+# Example files
+example_*.py
 
 # Logs
 *.log
+
+# Claude Code
+.claude/
