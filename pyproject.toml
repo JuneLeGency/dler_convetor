@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "py-subconverter"
+name = "subconverter-py"
 version = "0.1.0"
 description = "Python-based proxy subscription converter for Clash"
 readme = "README.md"
@@ -44,10 +44,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/gencylee/py-subconverter"
-Documentation = "https://github.com/gencylee/py-subconverter#readme"
-Repository = "https://github.com/gencylee/py-subconverter"
-"Bug Tracker" = "https://github.com/gencylee/py-subconverter/issues"
+Homepage = "https://github.com/gencylee/subconverter-py"
+Documentation = "https://github.com/gencylee/subconverter-py#readme"
+Repository = "https://github.com/gencylee/subconverter-py"
+"Bug Tracker" = "https://github.com/gencylee/subconverter-py/issues"
 
 [project.scripts]
 py-sub-conv = "py_subconverter.cli:main"

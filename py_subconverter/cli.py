@@ -11,7 +11,6 @@ import sys
 import os
 import urllib.parse
 import urllib.request
-from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
@@ -194,7 +193,7 @@ class ConverterCLI:
             print(f"✓ 订阅大小: {len(content)} 字节")
 
             # 解析代理
-            from proxy_parser import parse_subscription
+            from .proxy_parser import parse_subscription
             print(f"\n正在解析代理节点...")
             proxies = parse_subscription(content)
             print(f"✓ 发现 {len(proxies)} 个节点")
