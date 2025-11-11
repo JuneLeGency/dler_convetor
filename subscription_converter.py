@@ -15,6 +15,7 @@ from typing import Optional, List
 
 from proxy_parser import parse_subscription, Proxy
 from clash_generator import ClashGenerator
+from ini_parser import parse_ini_config
 
 
 class SubscriptionConverter:
@@ -75,19 +76,69 @@ class SubscriptionConverter:
 
         # Load custom rules if provided
         rules = None
+        custom_proxy_groups = None
+
         if rule_url:
             print(f"Loading rules from: {rule_url}")
             try:
                 rules_content = self.fetch_subscription(rule_url)
-                # Parse rules (simple line-by-line for now)
-                rules = [line.strip() for line in rules_content.split('\n') if line.strip()]
+
+                # Check if it's a subconverter INI file
+                if '[custom]' in rules_content or 'ruleset=' in rules_content or 'custom_proxy_group=' in rules_content:
+                    print("✓ Detected subconverter INI config file")
+                    print("✓ Parsing INI configuration...")
+
+                    # Parse INI config
+                    ini_parser = parse_ini_config(rule_url, verbose=True)
+
+                    # Download all rulesets
+                    print("\nDownloading rulesets...")
+                    ruleset_results = ini_parser.download_rulesets(verbose=True)
+
+                    # Flatten all rules from rulesets
+                    rules = []
+                    for group_name, group_rules in ruleset_results:
+                        rules.extend(group_rules)
+
+                    print(f"\n✓ Loaded {len(rules)} rules from {len(ruleset_results)} rulesets")
+
+                    # Get proxy names from parsed proxies
+                    proxy_names = [p.name for p in proxies]
+
+                    # Generate custom proxy groups
+                    print("\nGenerating custom proxy groups...")
+                    custom_proxy_groups = ini_parser.to_clash_proxy_groups(proxy_names)
+                    print(f"✓ Generated {len(custom_proxy_groups)} custom proxy groups")
+
+                else:
+                    # Parse rules - filter out comments
+                    rules = []
+                    for line in rules_content.split('\n'):
+                        line = line.strip()
+                        # Skip empty lines and comments
+                        if not line or line.startswith('#') or line.startswith(';'):
+                            continue
+                        # Basic validation - must contain commas (rule format)
+                        if ',' in line:
+                            rules.append(line)
+
+                    if not rules:
+                        print("Warning: No valid rules found in custom rules file")
+                        print("Using default rules instead")
+                        rules = None
+                    else:
+                        print(f"✓ Loaded {len(rules)} custom rules")
             except Exception as e:
                 print(f"Warning: Failed to load custom rules: {e}")
                 print("Using default rules instead")
 
         # Generate Clash config
-        print("Generating Clash configuration...")
-        config = self.clash_gen.generate_config(proxies, rules=rules)
+        print("\nGenerating Clash configuration...")
+        config = self.clash_gen.generate_config(
+            proxies,
+            rules=rules,
+            proxy_groups=custom_proxy_groups
+        )
 
         # Save to file if specified
         if output_file:

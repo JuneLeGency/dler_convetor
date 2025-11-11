@@ -238,17 +238,28 @@ class ConverterCLI:
 
             # 加载自定义规则
             rules = None
+            custom_proxy_groups = None
+
             if config_url:
-                print(f"正在加载自定义规则...")
+                print(f"正在加载自定义配置...")
                 try:
                     rules_content = self.converter.fetch_subscription(config_url)
-                    rules = self._parse_rules(rules_content)
-                    print(f"✓ 加载了 {len(rules)} 条规则")
+                    rules, custom_proxy_groups = self._parse_rules(rules_content, proxies, verbose)
+                    if rules:
+                        print(f"✓ 加载了 {len(rules)} 条规则")
+                    if custom_proxy_groups:
+                        print(f"✓ 生成了 {len(custom_proxy_groups)} 个自定义策略组")
+                    if not rules and not custom_proxy_groups:
+                        print(f"⚠ 使用默认配置")
                 except Exception as e:
-                    print(f"⚠ 加载规则失败: {e}")
-                    print(f"⚠ 使用默认规则")
+                    print(f"⚠ 加载配置失败: {e}")
+                    print(f"⚠ 使用默认配置")
 
-            config = generator.generate_config(proxies, rules=rules)
+            config = generator.generate_config(
+                proxies,
+                rules=rules,
+                proxy_groups=custom_proxy_groups
+            )
 
             # 保存配置
             with open(output, 'w', encoding='utf-8') as f:
@@ -329,18 +340,73 @@ class ConverterCLI:
 
         return proxies
 
-    def _parse_rules(self, content: str):
-        """解析规则内容"""
+    def _parse_rules(self, content: str, proxies, verbose: bool):
+        """解析规则内容
+
+        Returns:
+            Tuple[Optional[List[str]], Optional[List[Dict]]]: (rules, custom_proxy_groups)
+        """
+        # Check if it's a subconverter INI file
+        if '[custom]' in content or 'ruleset=' in content or 'custom_proxy_group=' in content:
+            print("✓ 检测到 subconverter INI 配置文件")
+            print("✓ 正在解析 INI 配置...")
+
+            try:
+                from ini_parser import INIConfigParser
+
+                # Parse INI config
+                ini_parser = INIConfigParser()
+                ini_parser.parse_ini_file(content)
+
+                # Download all rulesets
+                print("\n下载规则集...")
+                ruleset_results = ini_parser.download_rulesets(verbose=verbose)
+
+                # Flatten all rules from rulesets
+                rules = []
+                for group_name, group_rules in ruleset_results:
+                    rules.extend(group_rules)
+
+                if verbose:
+                    print(f"✓ 从 {len(ruleset_results)} 个规则集加载了 {len(rules)} 条规则")
+
+                # Get proxy names from parsed proxies
+                proxy_names = [p.name for p in proxies]
+
+                # Generate custom proxy groups
+                print("\n生成自定义策略组...")
+                custom_proxy_groups = ini_parser.to_clash_proxy_groups(proxy_names)
+
+                if verbose:
+                    print(f"✓ 生成了 {len(custom_proxy_groups)} 个自定义策略组")
+                    for group in custom_proxy_groups[:5]:  # 显示前5个
+                        print(f"  - {group['name']} ({group['type']})")
+                    if len(custom_proxy_groups) > 5:
+                        print(f"  ... 还有 {len(custom_proxy_groups) - 5} 个")
+
+                return rules, custom_proxy_groups
+
+            except Exception as e:
+                print(f"⚠ INI 解析失败: {e}")
+                if verbose:
+                    import traceback
+                    traceback.print_exc()
+                return None, None
+
+        # Plain rule list
         rules = []
         lines = content.strip().split('\n')
 
         for line in lines:
             line = line.strip()
-            if not line or line.startswith('#'):
+            # Skip empty lines and comments
+            if not line or line.startswith('#') or line.startswith(';'):
                 continue
-            rules.append(line)
+            # Basic validation - must contain commas (rule format)
+            if ',' in line:
+                rules.append(line)
 
-        return rules
+        return (rules if rules else None), None
 
 
 def main():

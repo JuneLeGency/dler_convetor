@@ -21,13 +21,13 @@ def decode_url(encoded_url):
     return urllib.parse.unquote(encoded_url)
 
 
-def download_config(subscription_url, output_file, verbose):
+def download_config(subscription_url, output_file, verbose,
+                    rule_url='https://raw.githubusercontent.com/JuneLegency/MyRule/master/ShellClash_Full_Block.ini'):
     """
     根据订阅地址下载配置文件
     """
     # config_url = 'https://https://github.com/juewuy/ShellCrash/raw/master/rules/ShellClash.ini'
     # config_url = 'https://https://github.com/juewuy/ShellCrash/raw/master/rules/rules/ShellClash_Full_Block.ini'
-    config_url = 'https://raw.githubusercontent.com/JuneLegency/MyRule/master/ShellClash_Full_Block.ini'
     # deploy with https://github.com/tindy2013/subconverter
     base_url = "http://127.0.0.1:25500/sub"
     params = {
@@ -39,7 +39,7 @@ def download_config(subscription_url, output_file, verbose):
         'exclude': '',
         'include': '',
         'url': subscription_url,
-        'config': config_url
+        'config': rule_url
     }
     #
     final_url = f"{base_url}?{urllib.parse.urlencode(params)}"

@@ -278,8 +278,13 @@ class ClashGenerator:
             rules = self.generate_rules()
         config["rules"] = rules
 
-        # Convert to YAML
-        return yaml.dump(config, allow_unicode=True, default_flow_style=False, sort_keys=False)
+        # Convert to YAML with proper indentation
+        # Use custom Dumper to ensure proper list indentation
+        class CustomDumper(yaml.SafeDumper):
+            def increase_indent(self, flow=False, indentless=False):
+                return super(CustomDumper, self).increase_indent(flow, False)
+
+        return yaml.dump(config, Dumper=CustomDumper, allow_unicode=True, default_flow_style=False, sort_keys=False, indent=2)
 
     def load_external_rules(self, rule_url: str) -> List[str]:
         """Load rules from external source (for future implementation)"""

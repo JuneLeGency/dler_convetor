@@ -45,11 +45,12 @@ uv.lock
 
 # Test and debug files
 *test*.yaml
-*test*.py
+test_*.py
 *debug*.py
 *compare*.py
 config_*.yaml
 cli_test_*.yaml
+test_results.txt
 
 # Logs
 *.log

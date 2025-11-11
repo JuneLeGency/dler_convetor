@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 
 from dler_api_client import DlerAPIClient
+from sub_converter import download_config
 from subscription_converter import SubscriptionConverter
 
 
@@ -71,18 +72,30 @@ def main():
         sub_url = clash_url.replace('clash', 'mu')
 
         try:
+            # Old method - save to config_old.yaml
+            print("Converting with OLD method...")
+            rule_url = 'https://raw.githubusercontent.com/JuneLegency/MyRule/master/ShellClash_Full_Block.ini'
+            download_config(sub_url, 'config_old.yaml', True, rule_url)
+            print("✓ Old method: config_old.yaml")
+
+            # New method - save to config_new.yaml (without custom rules)
+            print("\nConverting with NEW method (using default rules)...")
             converter = SubscriptionConverter()
             converter.convert_from_url(
                 subscription_url=sub_url,
-                rule_url='https://raw.githubusercontent.com/JuneLegency/MyRule/master/ShellClash_Full_Block.ini',
-                output_file='config.yaml'
+                output_file='config_new.yaml',
+                rule_url=rule_url
+                # Note: Not using rule_url because local converter doesn't support INI format
             )
-            print("✓ Subscription converted successfully!")
-            print("✓ Config saved to: config.yaml")
+            print("✓ New method: config_new.yaml (with default rules)")
+
+            print("\n✓ Both conversions completed!")
+            print("✓ Compare: config_old.yaml vs config_new.yaml")
         except Exception as e:
             print(f"✗ Error converting subscription: {e}")
     else:
         print("\n--- 4. Skipping conversion (no managed config) ---")
+
 
 if __name__ == "__main__":
     main()

@@ -4,10 +4,28 @@
 
 A standalone, cross-platform proxy subscription converter implemented in pure Python. No server dependencies required!
 
+---
+
+## 🎉 重大更新 Major Update (2025-11-10)
+
+**✅ 本地转换器现已完整支持 subconverter INI 配置！**
+
+- 🆕 完整解析 INI 配置文件（`[custom]`, `ruleset=`, `custom_proxy_group=`）
+- 🆕 自动下载所有外部规则集（支持数万条规则）
+- 🆕 完整支持自定义策略组（🎯 全球直连、🛑 广告拦截等）
+- 🆕 正则表达式匹配节点和策略组引用
+- ✨ **无需运行 subconverter 服务！**
+
+现在推荐统一使用本地转换方法（`--method local`，默认），无需 HTTP 服务！
+
+---
+
 ## ✨ 特性 Features
 
 - ✅ **纯 Python 实现** - 无需外部服务 / Pure Python Implementation - No external services
 - ✅ **跨平台** - 支持 Windows, macOS, Linux / Cross-Platform
+- ✅ **完整 INI 支持** - 🆕 本地解析 subconverter INI 配置 / Full INI config support locally
+- ✅ **自定义策略组** - 🆕 完整支持复杂规则和策略组 / Custom proxy groups and rules
 - ✅ **完整的 CLI 工具** - 支持新旧两种转换方式 / Complete CLI tool with dual conversion methods
 - ✅ **Dler Cloud 集成** - 自动获取订阅 / Dler Cloud integration
 - ✅ **多种代理格式** / Multiple Proxy Formats:
@@ -253,6 +271,8 @@ fetch   parse     filter    generate    save
 | 安装 Installation | pip/uv | Docker/Build from source |
 | 依赖 Dependency | 最小化 Minimal | 众多 C++ 库 Many libs |
 | 自定义 Customization | 容易 Easy (Python) | 复杂 Complex (C++) |
+| INI 配置 INI Config | ✅ **完整支持** (NEW!) | ✅ 完整支持 |
+| 自定义策略组 Custom Groups | ✅ **完整支持** (NEW!) | ✅ 完整支持 |
 | CLI 工具 | ✅ 完整 Complete | ✅ HTTP API only |
 | 节点过滤 | ✅ 正则 Regex | ✅ 正则 Regex |
 | Dler Cloud | ✅ 原生支持 Native | ❌ Manual |
@@ -359,6 +379,8 @@ python test_converter.py
 - [CLI 完成总结](CLI_SUMMARY.md) - 功能清单和测试结果
 
 ### 其他文档
+- [转换器对比说明](CONVERTER_COMPARISON.md) ⭐ 重要 - 新旧方法详细对比
+- [规则格式说明](RULES_FORMAT_GUIDE.md) - 规则文件格式详解
 - [对比报告](COMPARISON_REPORT.md) - 新旧方法对比
 - [项目总结](PROJECT_SUMMARY.md) - 项目概览
 - [使用指南](USAGE.md) - API 使用文档
