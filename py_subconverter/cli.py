@@ -232,7 +232,7 @@ class ConverterCLI:
 
             # 生成配置
             print(f"\n正在生成 Clash 配置...")
-            from clash_generator import ClashGenerator
+            from .clash_generator import ClashGenerator
             generator = ClashGenerator()
 
             # 加载自定义规则
@@ -351,7 +351,7 @@ class ConverterCLI:
             print("✓ 正在解析 INI 配置...")
 
             try:
-                from ini_parser import INIConfigParser
+                from .ini_parser import INIConfigParser
 
                 # Parse INI config
                 ini_parser = INIConfigParser()
